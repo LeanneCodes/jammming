@@ -1,5 +1,5 @@
 const clientId = process.env.REACT_APP_API_KEY;
-const redirectURI = 'http://localhost:3000/';
+const redirectURI = 'http://Trackify.surge.sh';
 let accessToken;
 
 const Spotify = {
@@ -26,11 +26,13 @@ const Spotify = {
         }
     },
 
-    search(query) {
+    search(term) {
         const accessToken = Spotify.getAccessToken();
-        return fetch(`https://api.spotify.com/v1/search?type=track&q=${query}`, {headers: {
-            Authorization: `Bearer ${accessToken}`
-        }}).then(response => {
+        return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        }).then(response => {
             return response.json();
         }).then(jsonResponse => {
             if (!jsonResponse.tracks) {
@@ -39,15 +41,15 @@ const Spotify = {
             return jsonResponse.tracks.items.map(track => ({
                 id: track.id,
                 name: track.name,
-                artists: track.artists[0].name,
+                artist: track.artists[0].name,
                 album: track.album.name,
                 uri: track.uri
             }))
         })
     },
 
-    savePlaylist(name, trackURIs) {
-        if (!name || !trackURIs.length) {
+    savePlaylist(name, trackUris) {
+        if (!name || !trackUris.length) {
             return;
         }
 
@@ -71,7 +73,7 @@ const Spotify = {
                 {
                     headers: headers,
                     method: 'POST',
-                    body: JSON.stringify({uris: trackURIs})
+                    body: JSON.stringify({uris: trackUris})
                 })
             })
         });
